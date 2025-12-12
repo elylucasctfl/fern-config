@@ -4,10 +4,25 @@ api:
     - openapi: ../openapi-spec.yml
 default-group: local
 groups:
-  local:
+  ts-sdk:
     generators:
       - name: fernapi/fern-typescript-sdk
-        output:
-          location: local-file-system
-          path: ../sdks/typescript
         version: 3.39.3
+        output:
+          location: npm
+          package-name: contentful
+        github:
+          repository: elylucasctfl/fern-typescript
+        config:
+          namespaceExport: Contentful
+          config:
+          noSerdeLayer: false
+          skipResponseValidation: true
+          allowExtraFields: true
+  # ts-sdk: # group name
+  #   generators:
+  #     - name: fernapi/fern-typescript-sdk
+  #       version: 3.39.3
+  #       output:
+  #         location: local-file-system
+  #         path: ../sdks/typescript
