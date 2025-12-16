@@ -2,12 +2,14 @@
 api:
   specs:
     - openapi: ../openapi-spec.yml
+      overrides: ../openapi-overrides.yml
+    
 default-group: local
 groups:
   ts-sdk:
     generators:
       - name: fernapi/fern-typescript-sdk
-        version: 3.39.3
+        version: 3.4.0
         output:
           location: npm
           package-name: contentful
@@ -15,14 +17,27 @@ groups:
           repository: elylucasctfl/fern-typescript
         config:
           namespaceExport: Contentful
+          allowCustomFetcher: true
           config:
           noSerdeLayer: false
           skipResponseValidation: true
           allowExtraFields: true
+          extraDependencies:
+            fast-copy: "^4.0.2"
+        
   # ts-sdk: # group name
   #   generators:
-  #     - name: fernapi/fern-typescript-sdk
-  #       version: 3.39.3
+  #     - name: fernapi/fern-typescript-sdk        
+  #       version: 3.4.0
   #       output:
   #         location: local-file-system
-  #         path: ../sdks/typescript
+  #         path: ../../sdks/typescript
+  #       config:
+  #         namespaceExport: Contentful
+  #         allowCustomFetcher: true
+  #         config:
+  #         noSerdeLayer: false
+  #         skipResponseValidation: true
+  #         allowExtraFields: true
+  #         extraDependencies:
+  #           contentful-resolve-response: "^1.9.4"

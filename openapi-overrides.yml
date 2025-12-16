@@ -1,0 +1,62 @@
+x-fern-sdk-variables:
+  spaceId:
+    type: string
+    description: The unique identifier for your Contentful space
+  environmentId:
+    type: string
+    description: The environment within the space
+
+paths:
+  /spaces/{spaceId}/environments/{environmentId}/content_types/{contentTypeId}:
+    get:
+      summary: Get ContentType
+      x-fern-sdk-group-name:
+        - contentTypes
+      x-fern-sdk-method-name: get
+      parameters:
+        - name: spaceId
+          x-fern-sdk-variable: spaceId
+        - name: environmentId
+          x-fern-sdk-variable: environmentId
+  /spaces/{spaceId}/environments/{environmentId}/content_types:
+    get:
+      x-fern-sdk-group-name:
+        - contentTypes
+      x-fern-sdk-method-name: list
+      parameters:
+        - name: spaceId
+          x-fern-sdk-variable: spaceId
+        - name: environmentId
+          x-fern-sdk-variable: environmentId
+  /spaces/{spaceId}/environments/{environmentId}/entries/{entryId}:
+    get:
+      x-fern-sdk-group-name:
+        - Entries
+      x-fern-sdk-method-name: get
+      parameters:
+        - name: spaceId
+          x-fern-sdk-variable: spaceId
+        - name: environmentId
+          x-fern-sdk-variable: environmentId
+  /spaces/{spaceId}/environments/{environmentId}/entries:
+    get:
+      x-fern-sdk-group-name:
+        - Entries
+      x-fern-sdk-method-name: list
+      parameters:
+        - name: spaceId
+          x-fern-sdk-variable: spaceId
+        - name: environmentId
+          x-fern-sdk-variable: environmentId
+      
+components:
+  schemas:
+    EntrySchema:
+      x-fern-type-name: EntrySchema
+      properties:
+        sys:
+          properties:
+            fieldStatus:
+              properties:
+                "*":
+                  x-fern-property-name: "properties"

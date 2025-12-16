@@ -1,12 +1,16 @@
 info:
-  title: Contentful Faux API
+  title: Contentful Delivery Faux API
   version: 0.0.1
   description: A faux API against real Contentful endpoints to generate OpenAPI specs
+  contact:
+    name: Contentful OpenAPI Tools Team
+    url: https://www.contentful.com/developers/docs/
+    email: oas@contentful.com
 security:
-  - bearerAuth: []
+  - accessToken: []
 components:
   securitySchemes:
-    bearerAuth:
+    accessToken:
       type: http
       scheme: bearer
       bearerFormat: JWT
@@ -156,24 +160,7 @@ components:
         - RichText
         - Array
         - Link
-        - ResourceLink
-    CreateContentTypeSchema:
-      type: object
-      properties:
-        displayField:
-          $ref: "#/components/schemas/ContentTypeSchema/properties/displayField"
-        name:
-          $ref: "#/components/schemas/ContentTypeSchema/properties/name"
-        description:
-          $ref: "#/components/schemas/ContentTypeSchema/properties/description"
-        fields:
-          $ref: "#/components/schemas/ContentTypeSchema/properties/fields"
-        metadata:
-          $ref: "#/components/schemas/ContentTypeSchema/properties/metadata"
-      required:
-        - name
-        - fields
-      additionalProperties: false
+        - ResourceLink    
     IsoDateTimeSchema:
       type: string
       format: date-time
@@ -371,8 +358,7 @@ components:
                       - sys
                     additionalProperties: false
                 - $ref: "#/components/schemas/EntryLinkSchema"
-                - $ref: "#/components/schemas/EntryFieldsSchema/additionalProperties/anyOf/0/addi\
-                    tionalProperties/anyOf/5/items"
+                # - $ref: "#/components/schemas/EntryFieldsSchema/additionalProperties/anyOf/0/additionalProperties/anyOf/5/items"
                 - type: object
                   properties:
                     nodeType:
@@ -444,8 +430,7 @@ components:
                 - type: object
                   additionalProperties: {}
                 - {}
-          - $ref: "#/components/schemas/EntryFieldsSchema/additionalProperties/anyOf/0/addi\
-              tionalProperties"
+          # - $ref: "#/components/schemas/EntryFieldsSchema/additionalProperties/anyOf/0/additionalProperties"
     EntrySchema:
       type: object
       properties:
@@ -471,7 +456,7 @@ components:
             id:
               type: string
             type:
-              $ref: "#/components/schemas/EntryLinkSchema"
+              type: string
             createdAt:
               $ref: "#/components/schemas/IsoDateTimeSchema"
             updatedAt:
@@ -524,12 +509,7 @@ components:
             - createdAt
             - updatedAt
             - environment
-            - createdBy
-            - updatedBy
-            - version
-            - automationTags
             - contentType
-            - urn
           additionalProperties: false
         fields:
           $ref: "#/components/schemas/EntryFieldsSchema"
@@ -538,134 +518,7 @@ components:
         - sys
         - fields
       additionalProperties: false
-    EntryCreationSchema:
-      type: object
-      properties:
-        metadata:
-          $ref: "#/components/schemas/EntrySchema/properties/metadata"
-        sys:
-          $ref: "#/components/schemas/EntrySchema/properties/sys"
-        fields:
-          $ref: "#/components/schemas/EntryFieldsSchema"
-      additionalProperties: false
-    EntryCreationValidationErrorSchema:
-      type: object
-      properties:
-        sys:
-          type: object
-          properties:
-            type:
-              type: string
-              const: Error
-            id:
-              type: string
-              enum:
-                - BadRequest
-                - VersionMismatch
-          required:
-            - type
-            - id
-          additionalProperties: false
-        message:
-          type: string
-          enum:
-            - The content type you sent could not be found or was not activated.
-            - Missing object
-        requestId:
-          type: string
-          format: uuid
-      required:
-        - sys
-        - requestId
-      additionalProperties: false
-  responses:
-    "400":
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-            required:
-              - error
-            additionalProperties: false
-          example:
-            error: Bad Request
-    "401":
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-            required:
-              - error
-            additionalProperties: false
-          example:
-            error: Unauthorized
-    "403":
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-            required:
-              - error
-            additionalProperties: false
-          example:
-            error: Forbidden
-    "404":
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-            required:
-              - error
-            additionalProperties: false
-          example:
-            error: Not Found
-    "422":
-      description: Unprocessable Entity
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-            required:
-              - error
-            additionalProperties: false
-          example:
-            error: Unprocessable Entity
-    "500":
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-            required:
-              - error
-            additionalProperties: false
-          example:
-            error: Internal Server Error
 tags:
-  - name: greetings
-    description: Greeting related endpoints
   - name: contentTypes
     description: Content Type related endpoints
   - name: entries
@@ -712,196 +565,66 @@ paths:
             type: string
             minLength: 1
             maxLength: 64
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.contentful.delivery.v1+json:
+              schema:
+                $ref: "#/components/schemas/ContentTypeSchema"
+              example:
+                sys:
+                  space:
+                    sys:
+                      type: Link
+                      linkType: Space
+                      id: exampleSpaceId
+                  id: blogPost
+                  type:
+                    sys:
+                      type: Link
+                      linkType: ContentType
+                      id: ContentType
+                  createdAt: 2023-10-05T14:48:00.000Z
+                  updatedAt: 2023-10-05T14:48:00.000Z
+                  environment:
+                    sys:
+                      type: Link
+                      linkType: Environment
+                      id: master
+                  publishedVersion: 1
+                  publishedAt: 2023-10-05T14:48:00.000Z
+                  firstPublishedAt: 2023-10-05T14:48:00.000Z
+                  createdBy:
+                    sys:
+                      type: Link
+                      linkType: User
+                      id: exampleUserId
+                  updatedBy:
+                    sys:
+                      type: Link
+                      linkType: User
+                      id: exampleUserId
+                  publishedCounter: 1
+                  version: 1
+                  publishedBy:
+                    sys:
+                      type: Link
+                      linkType: User
+                      id: exampleUserId
+                displayField: title
+                name: Blog Post
+                description: A content type for blog posts
+                fields:
+                  - id: title
+                    type: Symbol
+                    name: Title
+                    required: true
       x-contentful-api-targets:
         - delivery
-        - preview
       x-contentful-release-stage: stable
       x-contentful-disable-doc-generation: true
       x-contentful-disable-sdk-generation: false
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/vnd.contentful.management.v1+json:
-              schema:
-                $ref: "#/components/schemas/ContentTypeSchema"
-              example:
-                sys:
-                  space:
-                    sys:
-                      type: Link
-                      linkType: Space
-                      id: exampleSpaceId
-                  id: blogPost
-                  type:
-                    sys:
-                      type: Link
-                      linkType: ContentType
-                      id: ContentType
-                  createdAt: 2023-10-05T14:48:00.000Z
-                  updatedAt: 2023-10-05T14:48:00.000Z
-                  environment:
-                    sys:
-                      type: Link
-                      linkType: Environment
-                      id: master
-                  publishedVersion: 1
-                  publishedAt: 2023-10-05T14:48:00.000Z
-                  firstPublishedAt: 2023-10-05T14:48:00.000Z
-                  createdBy:
-                    sys:
-                      type: Link
-                      linkType: User
-                      id: exampleUserId
-                  updatedBy:
-                    sys:
-                      type: Link
-                      linkType: User
-                      id: exampleUserId
-                  publishedCounter: 1
-                  version: 1
-                  publishedBy:
-                    sys:
-                      type: Link
-                      linkType: User
-                      id: exampleUserId
-                displayField: title
-                name: Blog Post
-                description: A content type for blog posts
-                fields:
-                  - id: title
-                    type: Symbol
-                    name: Title
-                    required: true
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "422":
-          $ref: "#/components/responses/422"
-        "500":
-          $ref: "#/components/responses/500"
-    put:
-      description: Update a ContentType by Id
-      summary: put ContentType
-      tags:
-        - contentTypes
-      operationId: updateContentType
-      parameters:
-        - name: spaceId
-          in: path
-          required: true
-          description: ID of the space in form of a string
-          example: yadj1kx9rmg0
-          schema:
-            type: string
-            minLength: 1
-            maxLength: 20
-        - name: environmentId
-          in: path
-          required: true
-          description: ID of the environment in form of a string
-          example: master
-          schema:
-            type: string
-            minLength: 1
-            maxLength: 40
-        - name: contentTypeId
-          in: path
-          required: true
-          description: ID of the content type in form of a string
-          example: blogPost
-          schema:
-            type: string
-            minLength: 1
-            maxLength: 64
-      requestBody:
-        content:
-          application/vnd.contentful.management.v1+json:
-            schema:
-              $ref: "#/components/schemas/CreateContentTypeSchema"
-            example:
-              name: Blog Post
-              description: A content type for blog posts
-              fields:
-                - id: title
-                  name: Title
-                  type: Symbol
-                  required: true
-      x-contentful-api-targets:
-        - management
-      x-contentful-release-stage: stable
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/vnd.contentful.management.v1+json:
-              schema:
-                $ref: "#/components/schemas/ContentTypeSchema"
-              example:
-                sys:
-                  space:
-                    sys:
-                      type: Link
-                      linkType: Space
-                      id: exampleSpaceId
-                  id: blogPost
-                  type:
-                    sys:
-                      type: Link
-                      linkType: ContentType
-                      id: ContentType
-                  createdAt: 2023-10-05T14:48:00.000Z
-                  updatedAt: 2023-10-05T14:48:00.000Z
-                  environment:
-                    sys:
-                      type: Link
-                      linkType: Environment
-                      id: master
-                  publishedVersion: 1
-                  publishedAt: 2023-10-05T14:48:00.000Z
-                  firstPublishedAt: 2023-10-05T14:48:00.000Z
-                  createdBy:
-                    sys:
-                      type: Link
-                      linkType: User
-                      id: exampleUserId
-                  updatedBy:
-                    sys:
-                      type: Link
-                      linkType: User
-                      id: exampleUserId
-                  publishedCounter: 1
-                  version: 1
-                  publishedBy:
-                    sys:
-                      type: Link
-                      linkType: User
-                      id: exampleUserId
-                displayField: title
-                name: Blog Post
-                description: A content type for blog posts
-                fields:
-                  - id: title
-                    type: Symbol
-                    name: Title
-                    required: true
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "422":
-          $ref: "#/components/responses/422"
-        "500":
-          $ref: "#/components/responses/500"
   /spaces/{spaceId}/environments/{environmentId}/content_types:
     get:
       description: Get ContentTypes
@@ -928,15 +651,11 @@ paths:
             type: string
             minLength: 1
             maxLength: 40
-      x-contentful-api-targets:
-        - delivery
-        - preview
-      x-contentful-release-stage: stable
       responses:
         "200":
           description: Successful response
           content:
-            application/vnd.contentful.management.v1+json:
+            application/vnd.contentful.delivery.v1+json:
               schema:
                 type: object
                 properties:
@@ -959,6 +678,17 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/ContentTypeSchema"
+                  includes:
+                    type: object
+                    properties:
+                      Entry:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ContentTypeSchema"
+                      Asset:
+                        type: array
+                        items: {}
+                    additionalProperties: false
                 required:
                   - sys
                   - total
@@ -1020,18 +750,9 @@ paths:
                         type: Symbol
                         name: Title
                         required: true
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "422":
-          $ref: "#/components/responses/422"
-        "500":
-          $ref: "#/components/responses/500"
+      x-contentful-api-targets:
+        - delivery
+      x-contentful-release-stage: stable
   /spaces/{spaceId}/environments/{environmentId}/entries/{entryId}:
     get:
       description: Retrieve an entry by ID
@@ -1067,14 +788,11 @@ paths:
             type: string
             minLength: 1
             maxLength: 64
-      x-contentful-api-targets:
-        - delivery
-      x-contentful-release-stage: stable
       responses:
         "200":
           description: Successful response
           content:
-            application/vnd.contentful.management.v1+json:
+            application/vnd.contentful.delivery.v1+json:
               schema:
                 $ref: "#/components/schemas/EntrySchema"
               example:
@@ -1096,11 +814,7 @@ paths:
                       linkType: Space
                       id: exampleSpaceId
                   id: exampleEntryId
-                  type:
-                    sys:
-                      type: Link
-                      linkType: Entry
-                      id: Entry
+                  type: Entry
                   createdAt: 2023-10-05T14:48:00.000Z
                   updatedAt: 2023-10-05T14:48:00.000Z
                   environment:
@@ -1166,301 +880,9 @@ paths:
                         type: Link
                         linkType: Tag
                         id: exampleTagId
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "422":
-          $ref: "#/components/responses/422"
-        "500":
-          $ref: "#/components/responses/500"
-    put:
-      description: Update an entry by ID
-      summary: Updates an entry by ID
-      tags:
-        - entries
-      operationId: updateEntry
-      parameters:
-        - name: spaceId
-          in: path
-          required: true
-          description: ID of the space in form of a string
-          example: yadj1kx9rmg0
-          schema:
-            type: string
-            minLength: 1
-            maxLength: 20
-        - name: environmentId
-          in: path
-          required: true
-          description: ID of the environment in form of a string
-          example: master
-          schema:
-            type: string
-            minLength: 1
-            maxLength: 40
-        - name: entryId
-          in: path
-          required: true
-          description: ID of the entry in form of a string
-          example: 1nG4SkuMy0WenQUG6z2aEw
-          schema:
-            type: string
-            minLength: 1
-            maxLength: 64
-        - name: X-Contentful-Version
-          in: header
-          required: true
-          description: The version number of the entry to be updated, should match current
-            version of entry, and will be incremented by one upon success
-          example: 77
-          schema:
-            type: number
-            minimum: 1
-        - name: X-Contentful-Content-Type
-          in: header
-          required: false
-          description: The Content Type Id of the entry to be updated, only required when
-            creating a new entry, updating an existing entry does not require
-            this header
-          example: blogPost
-          schema:
-            type: string
-            minLength: 1
-            maxLength: 64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/EntryCreationSchema"
-            example:
-              metadata:
-                tags:
-                  - sys:
-                      type: Link
-                      linkType: Tag
-                      id: exampleTagId
-                concepts:
-                  - sys:
-                      type: Link
-                      linkType: TaxonomyConcept
-                      id: exampleTaxonomyConceptId
-              sys:
-                space:
-                  sys:
-                    type: Link
-                    linkType: Space
-                    id: exampleSpaceId
-                id: exampleEntryId
-                type:
-                  sys:
-                    type: Link
-                    linkType: Entry
-                    id: Entry
-                createdAt: 2023-10-05T14:48:00.000Z
-                updatedAt: 2023-10-05T14:48:00.000Z
-                environment:
-                  sys:
-                    type: Link
-                    linkType: Environment
-                    id: master
-                publishedVersion: 3
-                publishedAt: 2023-10-06T10:00:00.000Z
-                firstPublishedAt: 2023-10-05T15:00:00.000Z
-                createdBy:
-                  sys:
-                    type: Link
-                    linkType: User
-                    id: exampleUserId
-                updatedBy:
-                  sys:
-                    type: Link
-                    linkType: User
-                    id: exampleUserId
-                publishedCounter: 2
-                version: 3
-                publishedBy:
-                  sys:
-                    type: Link
-                    linkType: User
-                    id: exampleUserId
-                fieldStatus:
-                  "*":
-                    title: published
-                    description: draft
-                    body: changed
-                automationTags:
-                  - sys:
-                      type: Link
-                      linkType: Tag
-                      id: automationTagId1
-                  - sys:
-                      type: Link
-                      linkType: Tag
-                      id: automationTagId2
-                contentType:
-                  sys:
-                    type: Link
-                    linkType: ContentType
-                    id: blogPost
-                urn: urn:contentful:entry::exampleEntryId
-              fields:
-                title: Example Entry Title
-                description: This is an example description for the entry.
-                body: Here is the main body content of the example entry.
-                relatedEntries:
-                  - sys:
-                      type: Link
-                      linkType: Entry
-                      id: relatedEntryId1
-                  - sys:
-                      type: Link
-                      linkType: Entry
-                      id: relatedEntryId2
-                tags:
-                  - sys:
-                      type: Link
-                      linkType: Tag
-                      id: exampleTagId
-        description: Entry object with updated fields
-        required: true
       x-contentful-api-targets:
-        - management
+        - delivery
       x-contentful-release-stage: stable
-      responses:
-        "200":
-          description: Entry updated successfully - API will return the updated entry object
-          content:
-            application/vnd.contentful.management.v1+json:
-              schema:
-                $ref: "#/components/schemas/EntrySchema"
-              example:
-                metadata:
-                  tags:
-                    - sys:
-                        type: Link
-                        linkType: Tag
-                        id: exampleTagId
-                  concepts:
-                    - sys:
-                        type: Link
-                        linkType: TaxonomyConcept
-                        id: exampleTaxonomyConceptId
-                sys:
-                  space:
-                    sys:
-                      type: Link
-                      linkType: Space
-                      id: exampleSpaceId
-                  id: exampleEntryId
-                  type:
-                    sys:
-                      type: Link
-                      linkType: Entry
-                      id: Entry
-                  createdAt: 2023-10-05T14:48:00.000Z
-                  updatedAt: 2023-10-05T14:48:00.000Z
-                  environment:
-                    sys:
-                      type: Link
-                      linkType: Environment
-                      id: master
-                  publishedVersion: 3
-                  publishedAt: 2023-10-06T10:00:00.000Z
-                  firstPublishedAt: 2023-10-05T15:00:00.000Z
-                  createdBy:
-                    sys:
-                      type: Link
-                      linkType: User
-                      id: exampleUserId
-                  updatedBy:
-                    sys:
-                      type: Link
-                      linkType: User
-                      id: exampleUserId
-                  publishedCounter: 2
-                  version: 3
-                  publishedBy:
-                    sys:
-                      type: Link
-                      linkType: User
-                      id: exampleUserId
-                  fieldStatus:
-                    "*":
-                      title: published
-                      description: draft
-                      body: changed
-                  automationTags:
-                    - sys:
-                        type: Link
-                        linkType: Tag
-                        id: automationTagId1
-                    - sys:
-                        type: Link
-                        linkType: Tag
-                        id: automationTagId2
-                  contentType:
-                    sys:
-                      type: Link
-                      linkType: ContentType
-                      id: blogPost
-                  urn: urn:contentful:entry::exampleEntryId
-                fields:
-                  title: Example Entry Title
-                  description: This is an example description for the entry.
-                  body: Here is the main body content of the example entry.
-                  relatedEntries:
-                    - sys:
-                        type: Link
-                        linkType: Entry
-                        id: relatedEntryId1
-                    - sys:
-                        type: Link
-                        linkType: Entry
-                        id: relatedEntryId2
-                  tags:
-                    - sys:
-                        type: Link
-                        linkType: Tag
-                        id: exampleTagId
-        "400":
-          description: BadRequest - Request is malformed or invalid
-          content:
-            application/vnd.contentful.management.v1+json:
-              schema:
-                $ref: "#/components/schemas/EntryCreationValidationErrorSchema"
-              example:
-                sys:
-                  type: Error
-                  id: VersionMismatch
-                requestId: 9674bcb0-202d-4c0e-9a95-d75699ffcc3a
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "409":
-          description: Version mismatch error - invalid "X-Contentful-Version" version
-            received, this header value should match the current version of the
-            entry
-          content:
-            application/vnd.contentful.management.v1+json:
-              schema:
-                $ref: "#/components/schemas/EntryCreationValidationErrorSchema"
-              example:
-                sys:
-                  type: Error
-                  id: VersionMismatch
-                requestId: 9674bcb0-202d-4c0e-9a95-d75699ffcc3a
-        "422":
-          $ref: "#/components/responses/422"
-        "500":
-          $ref: "#/components/responses/500"
   /spaces/{spaceId}/environments/{environmentId}/entries:
     get:
       description: Retrieve a collection of entries
@@ -1487,15 +909,54 @@ paths:
             type: string
             minLength: 1
             maxLength: 40
-      x-contentful-api-targets:
-        - delivery
-        - preview
-      x-contentful-release-stage: stable
+        - name: content_type
+          in: query
+          required: false
+          description: Filter entries by content type ID
+          example: blogPost
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+        - name: cursor
+          in: query
+          required: false
+          description: Enables cursor based pagination
+          example: true
+          schema:
+            type: boolean
+        - name: include
+          in: query
+          required: false
+          description: Number of levels of linked resources to include
+          example: 1
+          schema:
+            type: number
+            minimum: 0
+            maximum: 10
+        - name: skip
+          in: query
+          required: false
+          description: Number of items to skip
+          example: 1
+          schema:
+            type: number
+            minimum: 0
+            maximum: 100
+        - name: limit
+          in: query
+          required: false
+          description: Limit number of items returned
+          example: 1
+          schema:
+            type: number
+            minimum: 0
+            maximum: 100
       responses:
         "200":
           description: Successful response
           content:
-            application/vnd.contentful.management.v1+json:
+            application/vnd.contentful.delivery.v1+json:
               schema:
                 type: object
                 properties:
@@ -1518,6 +979,17 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/EntrySchema"
+                  includes:
+                    type: object
+                    properties:
+                      Entry:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/EntrySchema"
+                      Asset:
+                        type: array
+                        items: {}
+                    additionalProperties: false
                 required:
                   - sys
                   - total
@@ -1550,11 +1022,7 @@ paths:
                           linkType: Space
                           id: exampleSpaceId
                       id: exampleEntryId
-                      type:
-                        sys:
-                          type: Link
-                          linkType: Entry
-                          id: Entry
+                      type: Entry
                       createdAt: 2023-10-05T14:48:00.000Z
                       updatedAt: 2023-10-05T14:48:00.000Z
                       environment:
@@ -1620,15 +1088,6 @@ paths:
                             type: Link
                             linkType: Tag
                             id: exampleTagId
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-        "422":
-          $ref: "#/components/responses/422"
-        "500":
-          $ref: "#/components/responses/500"
+      x-contentful-api-targets:
+        - delivery
+      x-contentful-release-stage: stable
